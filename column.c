@@ -87,7 +87,6 @@ int insert_value(COLUMN *col, void *value){
 // Function to delete a column
 void delete_column(COLUMN **col) {
     if (col != NULL) {
-        free((*col)->title);
         free((*col)->data);
         free((*col)->index);
     }

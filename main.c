@@ -6,7 +6,7 @@
 int main(){
     ColumnArray *array = init_column_array();
     hard_fill(array);
-    while (True){
+    while (1){
         choice(array);
     }
     return 0;

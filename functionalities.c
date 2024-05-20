@@ -134,8 +134,17 @@ void modify_dataframe(ColumnArray *array){
             add_column_to_array(array, col);
             break;
         }
-        case 4:
-            
+        case 4:{
+            char* title;
+            printf("What is the title of the column you want to delete :");
+            scanf("%s", &title);
+            for (int i = 0; i<array->size; i++){
+                COLUMN *col = array-> columns[i];
+                if (strcmp(col->title, title) == 0){
+                    delete_column(&col);
+                    break;
+                }
+            }
             break;
         case 5:
             rename_column(array);
@@ -151,6 +160,7 @@ void modify_dataframe(ColumnArray *array){
         default:
             printf("The number is invalid");
     }
+}
 }
 
 void display_row(ColumnArray *array, int start, int end) {
@@ -356,7 +366,8 @@ void change_value_at(ColumnArray *array, size_t column_index, unsigned long long
     if(new_value != NULL) {
         free(target_column->data[row_index]); // Libérez la mémoire de l'ancienne valeur
         target_column->data[row_index] = new_value; // Assigne la nouvelle valeur
-    } else {
+    }
+    else {
         printf("Failed to allocate memory for the new value\n");
     }
 }
