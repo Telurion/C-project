@@ -3,6 +3,7 @@
 #include "cdataframe.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 void choice(ColumnArray *array){
     int user_choice = 0;
@@ -34,21 +35,23 @@ void choice(ColumnArray *array){
         case 3:
             print_column_array(array);
             break;
-        case 4:
+        case 4:{
             int start = 0;
             int end = 0;
             printf("Enter the number of the first and the last row that you want to display in the form : first/last");
-            scanf("%d/%d", &start, %end);
-            void display_row(array, start, end);
+            scanf("%d/%d", &start, &end);
+            display_row(array, start, end);
             break;
-        case 5:
+        }
+        case 5:{
             int start = 0;
             int end = 0;
             printf("Enter the number of the first and the last column that you want to display in the form : first/last");
-            scanf("%d/%d", &start, %end);
+            scanf("%d/%d", &start, &end);
             display_column(array, start, end);
             break;
-        case 6:
+        }
+        case 6:{
             if (value_exists){
                 printf("The value exists in the dataframe");
             }
@@ -56,13 +59,15 @@ void choice(ColumnArray *array){
                 printf("The value doesn't exists un the dataframe");
             }
             break;
-        case 7:
+        }
+        case 7:{
             int column = 0;
             int row = 0;
             printf("Enter the position of the value you want with the form : column/row");
             scanf("%d/%d", &column, &row);
             print_value_at(array, column, row);
             break;
+        }
         case 8:
             print_column_names(array);
             break;
@@ -72,27 +77,29 @@ void choice(ColumnArray *array){
         case 10:
             printf("%d", array->size);
             break;
-        case 11:
-            void value;
+        case 11:{
+            char* value;
             printf("What value do you want to search for ?");
             scanf("%s", &value);
             printf("%d", count_cells_equal_to_value(array, value));
             break;
-        case 12:
-            void value;
+        }
+        case 12:{
+            char* value;
             printf("What value do you want to search for ?");
             scanf("%s", &value);
             printf("%d", count_cells_superior_to_value(array, value));
             break;
-        case 13:
-            void value;
+        }
+        case 13:{
+            char* value;
             printf("What value do you want to search for ?");
             scanf("%s", &value);
             printf("%d", count_cells_inferior_to_value(array, value));
             break;
+        }
         default:
             printf("The number is invalid");
-            return 0;
     }
 }
 
@@ -116,32 +123,33 @@ void modify_dataframe(ColumnArray *array){
         case 2:
 
             break;
-        case 3:
-            char* type;
+        case 3:{
+            ENUM_TYPE typeVar;
             char* title;
             printf("What type do you want the column to be ? (INT, UINT, CHAR, FLOAT, DOUBLE, STRING)");
-            scanf("%s", &type);
-            printf("What do you want the title of the column to be ?")
+            scanf("%s", &typeVar);
+            printf("What do you want the title of the column to be ?");
             scanf("%s", &title);
-            col = create_column(type, title);
+            COLUMN *col = create_column(typeVar, title);
             add_column_to_array(array, col);
             break;
+        }
         case 4:
-            char
+            
             break;
         case 5:
             rename_column(array);
             break;
-        case 6:
+        case 6:{
             int column = 0;
             int row = 0;
             printf("Enter the position of the value you want with the form : column/row");
             scanf("%d/%d", &column, &row);
-            void change_value_at(array, column, urow);
+            change_value_at(array, column, row);
             break;
+        }
         default:
             printf("The number is invalid");
-            return 0;
     }
 }
 
@@ -232,7 +240,7 @@ int count_cells_equal_to_value(ColumnArray *array, void *value) {
 
     for (size_t i = 0; i < array->size; i++) {
         COLUMN *col = array->columns[i];
-        cont += nb_occurence(col, value);
+        count += nb_occurence(col, value);
     }
 }
 
@@ -241,7 +249,7 @@ int count_cells_superior_to_value(ColumnArray *array, void *value) {
 
     for (size_t i = 0; i < array->size; i++) {
         COLUMN *col = array->columns[i];
-        cont += count_greater_than(col, value);
+        count += count_greater_than(col, value);
     }
 }
 
@@ -250,14 +258,11 @@ int count_cells_inferior_to_value(ColumnArray *array, void *value) {
 
     for (size_t i = 0; i < array->size; i++) {
         COLUMN *col = array->columns[i];
-        cont += count_less_than(col, value);
+        count += count_less_than(col, value);
     }
 }
 
 void change_value_at(ColumnArray *array, size_t column_index, unsigned long long int row_index) {
-    void new_value;
-
-
     if (column_index >= array->size) {
         printf("Invalid column index\n");
         return;
@@ -273,29 +278,85 @@ void change_value_at(ColumnArray *array, size_t column_index, unsigned long long
     printf("Value of type %s", array->columns[column_index]->column_type);
     printf("The value you will enter will be registered as the same type");
     printf("What is the new value ?");
+
+    void *new_value = NULL; // Déclarez new_value en dehors du bloc switch
+
     switch(array->columns[column_index]->column_type){
-        case INT:
-            scanf("%d", &new_value);
+        case INT:{
+            int temp_value;
+            scanf("%d", &temp_value);
+            new_value = malloc(sizeof(int));
+            if(new_value == NULL) {
+                printf("Memory allocation failed\n");
+                return;
+            }
+            *((int *)new_value) = temp_value;
             break;
-        case UINT:
-            scanf("%u", &new_value);
+        }
+        case UINT:{
+            unsigned int temp_value;
+            scanf("%u", &temp_value);
+            new_value = malloc(sizeof(unsigned int));
+            if(new_value == NULL) {
+                printf("Memory allocation failed\n");
+                return;
+            }
+            *((unsigned int *)new_value) = temp_value;
             break;
-        case FLOAT:
-            scanf("%f", &new_value);
+        }
+        case FLOAT:{
+            float temp_value;
+            scanf("%f", &temp_value);
+            new_value = malloc(sizeof(float));
+            if(new_value == NULL) {
+                printf("Memory allocation failed\n");
+                return;
+            }
+            *((float *)new_value) = temp_value;
             break;
-        case DOUBLE:
-            scanf("%lf", &new_value);
+        }
+        case DOUBLE:{
+            double temp_value;
+            scanf("%lf", &temp_value);
+            new_value = malloc(sizeof(double));
+            if(new_value == NULL) {
+                printf("Memory allocation failed\n");
+                return;
+            }
+            *((double *)new_value) = temp_value;
             break;
-        case CHAR:
-            scanf("%c", &new_value);
+        }
+        case CHAR:{
+            char temp_value;
+            scanf(" %c", &temp_value); // Ajouter un espace pour ignorer les espaces blancs et les caractères de nouvelle ligne
+            new_value = malloc(sizeof(char));
+            if(new_value == NULL) {
+                printf("Memory allocation failed\n");
+                return;
+            }
+            *((char *)new_value) = temp_value;
             break;
-        case STRING:
-            scanf("%s", &new_value);
+        }
+        case STRING:{
+            char temp_value[256]; // Définir une taille maximale pour la chaîne
+            scanf("%255s", temp_value); // Limitez la longueur de la chaîne entrée pour éviter un dépassement de tampon
+            new_value = malloc(strlen(temp_value) + 1); // Allouez suffisamment d'espace pour stocker la chaîne plus le caractère nul de fin de chaîne
+            if(new_value == NULL) {
+                printf("Memory allocation failed\n");
+                return;
+            }
+            strcpy((char *)new_value, temp_value); // Copiez la chaîne temporaire dans la nouvelle zone de mémoire allouée
             break;
+        }
         default:
             printf("Unsupported column type\n");
-            break;
+            return;
     }
 
-    array->columns[column_index]->data[row_index] = new_value;
+    if(new_value != NULL) {
+        free(target_column->data[row_index]); // Libérez la mémoire de l'ancienne valeur
+        target_column->data[row_index] = new_value; // Assigne la nouvelle valeur
+    } else {
+        printf("Failed to allocate memory for the new value\n");
+    }
 }
