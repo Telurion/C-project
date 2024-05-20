@@ -39,13 +39,5 @@ void convert_value(COLUMN *col, unsigned long long int i, char *str, int size);
 
 void print_column(COLUMN* col);
 
-int nb_occurence(COLUMN* col, void *value);
 
-void* get_element_at(COLUMN *col, unsigned long long int pos);
-
-int count_greater_than(COLUMN *col, void *x);
-
-int count_less_than(COLUMN *col, void *x);
-
-int count_equal_to(COLUMN *col, void *x);
 #endif
