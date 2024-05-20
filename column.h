@@ -1,12 +1,14 @@
 #ifndef COLUMN_H
 #define COLUMN_H
 
-enum enum_type { //Enumerate all types of data possible that can be used
+// Enum for data types
+enum enum_type {
     NULLVAL = 1, UINT, INT, CHAR, FLOAT, DOUBLE, STRING
 };
 typedef enum enum_type ENUM_TYPE;
 
-union column_type { //Determine the type of value entered
+// Enum for data types
+union column_type {
     unsigned int        uint_value;
     signed int          int_value;
     char                char_value;
@@ -16,6 +18,7 @@ union column_type { //Determine the type of value entered
 };
 typedef union column_type COL_TYPE ;
 
+// Column structure definition
 struct column {
     char *title;
     unsigned int size; //logical size
@@ -34,8 +37,7 @@ void delete_column(COLUMN **col);
 
 void convert_value(COLUMN *col, unsigned long long int i, char *str, int size);
 
-void print_col(COLUMN* col);
+void print_column(COLUMN* col);
 
-int nb_occ(COLUMN* col , void value);
 
 #endif
