@@ -121,7 +121,7 @@ void modify_dataframe(ColumnArray *array){
             add_row(array);
             break;
         case 2:
-
+            free_row(array);
             break;
         case 3:{
             ENUM_TYPE typeVar;

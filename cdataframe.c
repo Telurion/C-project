@@ -214,3 +214,32 @@ void add_row(ColumnArray *array) {
     }
     print_column_array(array);
 }
+
+void free_row(ColumnArray *array) {
+    print_column_array(array);
+    printf("\nPlease enter the index of the row that you want to be deleted (starting at 1): ");
+    int row_index;
+    scanf("%d", &row_index);
+
+    for (size_t i = 0; i < array->size; i++) {
+        COLUMN *col = array->columns[i];
+
+        if (row_index <= col->size) {
+            if (col->data[row_index - 1]) {
+                free(col->data[row_index - 1]);
+                col->data[row_index - 1] = NULL;
+            }
+
+            // Shift the remaining rows up
+            for (int j = row_index - 1; j < col->size - 1; j++) {
+                col->data[j] = col->data[j + 1];
+            }
+            col->size--;
+        } else {
+            printf("Row index %d is out of bounds for column %zu.\n", row_index, i + 1);
+        }
+    }
+
+    printf("Row %d has been deleted.\n", row_index);
+    print_column_array(array);
+}
