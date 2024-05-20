@@ -114,3 +114,8 @@ void print_col(COLUMN* col) {
         printf("%s\n", str);
     }
 }
+
+
+int nb_occ(COLUMN* col, void value){
+    
+}
