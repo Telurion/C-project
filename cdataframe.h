@@ -1,5 +1,7 @@
 #ifndef CDATAFRAME_H
 #define CDATAFRAME_H
+#include "column.h"
+#include <stddef.h>
 
 typedef struct {
     COLUMN **columns;
@@ -23,4 +25,7 @@ void hard_fill(ColumnArray *array);
 
 void add_row(ColumnArray *array);
 
+void free_row(ColumnArray *array);
+
 #endif //CDATAFRAME_H
+

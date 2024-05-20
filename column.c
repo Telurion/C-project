@@ -86,7 +86,6 @@ int insert_value(COLUMN *col, void *value){
 // Function to delete a column
 void delete_column(COLUMN **col) {
     if (col != NULL) {
-        free((*col)->title);
         free((*col)->data);
         free((*col)->index);
     }
@@ -120,14 +119,44 @@ void convert_value(COLUMN* col, unsigned long long int i, char* str, int size){
                 break;
         }
 
-
-}
-
-// Function to display the content of a column
-void print_column(COLUMN *col) {
+int count_less_than(COLUMN *col, void *x) {
+    int count = 0;
     for (unsigned long long int i = 0; i < col->size; ++i) {
-        char val[REALLOC_SIZE]; // Allocate sufficient space for any reasonable value
-        convert_value(col, i, val, sizeof(val));
-        printf("[%llu] %s\n", i + 1, val);
+        switch (col->column_type) {
+            case INT:
+                if (*((int *)col->data[i]) < *((int *)x)) {
+                    count++;
+                }
+                break;
+            case UINT:
+                if (*((unsigned int *)col->data[i]) < *((unsigned int *)x)) {
+                    count++;
+                }
+                break;
+            case FLOAT:
+                if (*((float *)col->data[i]) < *((float *)x)) {
+                    count++;
+                }
+                break;
+            case DOUBLE:
+                if (*((double *)col->data[i]) < *((double *)x)) {
+                    count++;
+                }
+                break;
+            case CHAR:
+                if (*((char *)col->data[i]) < *((char *)x)) {
+                    count++;
+                }
+                break;
+            case STRING:
+                if (strcmp(*((char **)col->data[i]), *((char **)x)) < 0) {
+                    count++;
+                }
+                break;
+            default:
+                printf("Unsupported column type\n");
+                return -1;
+        }
     }
+    return count;
 }
