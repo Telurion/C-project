@@ -28,4 +28,3 @@ void add_row(ColumnArray *array);
 void free_row(ColumnArray *array);
 
 #endif //CDATAFRAME_H
-
