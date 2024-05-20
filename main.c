@@ -6,11 +6,14 @@
 
 
 int main(){
-    ColumnArray *array = init_column_array();
+    COLUMN *mycol1 = create_column(UINT, "UNSIGNED INTEGER");
 
-    hard_fill(array);
+    int a = 34215, b = 364543664, x = 23480;
+    insert_value(mycol1, &a);
+    insert_value(mycol1, &b);
+    insert_value(mycol1, &x);
 
-    add_row(array);
+    print_column(mycol1);
 
-    free_column_array(array);
+    delete_column(&mycol1);
 }

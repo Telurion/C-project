@@ -86,7 +86,7 @@ int insert_value(COLUMN *col, void *value){
 // Function to delete a column
 void delete_column(COLUMN **col) {
     if (col != NULL) {
-        free((*col)->title);
+        //free((*col)->title);
         free((*col)->data);
         free((*col)->index);
     }
@@ -119,8 +119,6 @@ void convert_value(COLUMN* col, unsigned long long int i, char* str, int size){
             default:
                 break;
         }
-
-
 }
 
 // Function to display the content of a column

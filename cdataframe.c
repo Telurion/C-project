@@ -18,6 +18,177 @@ ColumnArray* init_column_array() {
     return array;
 }
 
+void hard_fill(ColumnArray *array) {
+    COLUMN *mycol1 = create_column(UINT, "UNSIGNED INTEGER");
+    int a = 34215, b = 364543664, x = 23480;
+    insert_value(mycol1, &a);
+    insert_value(mycol1, &b);
+    insert_value(mycol1, &x);
+    add_column_to_array(array, mycol1);
+
+    COLUMN *mycol2 = create_column(INT, "INTEGER");
+    unsigned int c = 312, d = 3456;
+    insert_value(mycol2, &c);
+    insert_value(mycol2, &d);
+    add_column_to_array(array, mycol2);
+
+    COLUMN *mycol3 = create_column(CHAR, "CHARACTER");
+    char *e = "e", *f = "f", *y = "y", *z = "z";
+    insert_value(mycol3, e);
+    insert_value(mycol3, f);
+    insert_value(mycol3, y);
+    insert_value(mycol3, z);
+    add_column_to_array(array, mycol3);
+
+    COLUMN *mycol4 = create_column(FLOAT, "FLOAT");
+    float g = 17, h = 213.6;
+    insert_value(mycol4, &g);
+    insert_value(mycol4, &h);
+    add_column_to_array(array, mycol4);
+
+    COLUMN *mycol5 = create_column(DOUBLE, "DOUBLE");
+    double i = 17, j = 213.6;
+    insert_value(mycol5, &i);
+    insert_value(mycol5, &j);
+    add_column_to_array(array, mycol5);
+
+    COLUMN *mycol6 = create_column(STRING, "STRING");
+    char** k = "stp marche", **l = "par pitie, fonctionne !";
+    insert_value(mycol6, k);
+    insert_value(mycol6, l);
+    add_column_to_array(array, mycol6);
+}
+
+
+
+void print_column_array(ColumnArray *array) {
+    printf("Columns:\n");
+    for (size_t i = 0; i < array->size; ++i) {
+        printf("Column %zu:\n", i+1);
+        print_column(array->columns[i]);
+        printf("\n");
+    }
+}
+
+
+
+void add_row(ColumnArray *array) {
+    char input[REALLOC_SIZE];
+
+    for (size_t i = 0; i < array->size; i++) {
+        printf("Column %zu: %s\nEnter the value to add (or type 'none' to skip): ", i + 1, array->columns[i]->title);
+
+        // Read input from the user
+        scanf("%s", input);
+
+        // Check if the user wants to skip this column
+        if (strcmp(input, "'none'") == 0) {
+            printf("Skipping column %zu\n", i + 1);
+            continue;
+        }
+        else {
+
+            // Insert the value based on column type
+            switch (array->columns[i]->column_type) {
+                case INT: {
+                    int value;
+                    if (sscanf(input, "%d", &value) != 1) {
+                        printf("Invalid input! Please enter a valid integer.\n");
+                        i--; // Repeat for the same column
+                        continue;
+                    }
+                    insert_value(array->columns[i], &value);
+                    break;
+                }
+                case UINT: {
+                    unsigned int value;
+                    if (sscanf(input, "%u", &value) != 1) {
+                        printf("Invalid input! Please enter a valid unsigned integer.\n");
+                        i--;
+                        continue;
+                    }
+                    insert_value(array->columns[i], &value);
+                    break;
+                }
+                case FLOAT: {
+                    float value;
+                    if (sscanf(input, "%f", &value) != 1) {
+                        printf("Invalid input! Please enter a valid float.\n");
+                        i--;
+                        continue;
+                    }
+                    insert_value(array->columns[i], &value);
+                    break;
+                }
+                case DOUBLE: {
+                    double value;
+                    if (sscanf(input, "%lf", &value) != 1) {
+                        printf("Invalid input! Please enter a valid double.\n");
+                        i--;
+                        continue;
+                    }
+                    insert_value(array->columns[i], &value);
+                    break;
+                }
+                case CHAR: {
+                    // Check if input is a single character
+                    if (strlen(input) != 1) {
+                        printf("Invalid input! Please enter a single valid character.\n");
+                        i--; // Repeat for the same column
+                        continue;
+                    }
+                    char value = input[0];
+                    insert_value(array->columns[i], &value);
+                    break;
+                }
+                case STRING: {
+                    // Directly insert the string if valid
+                    insert_value(array->columns[i],
+                                 strdup(input)); // Duplicate the string to avoid potential issues with memory management
+                    break;
+                }
+                default:
+                    printf("Unsupported data type!\n");
+                    break;
+            }
+        }
+    }
+    print_column_array(array);
+}
+
+void free_row(ColumnArray *array) {
+    print_column_array(array);
+    printf("\nPlease enter the index of the row that you want to be deleted (starting at 1): ");
+    int row_index;
+    scanf("%d", &row_index);
+
+    for (size_t i = 0; i < array->size; i++) {
+        COLUMN *col = array->columns[i];
+
+        if (row_index <= col->size) {
+            if (col->data[row_index - 1]) {
+                free(col->data[row_index - 1]);
+                col->data[row_index - 1] = NULL;
+            }
+
+            // Shift the remaining rows up
+            for (int j = row_index - 1; j < col->size - 1; j++) {
+                col->data[j] = col->data[j + 1];
+            }
+            col->size--;
+        } else {
+            printf("Row index %d is out of bounds for column %zu.\n", row_index, i + 1);
+        }
+    }
+
+    printf("Row %d has been deleted.\n", row_index);
+    print_column_array(array);
+}
+
+
+
+
+
 int add_column_to_array(ColumnArray *array, COLUMN *column) {
     if (array->size >= array->capacity) {
         size_t new_capacity = (array->capacity == 0) ? 1 : array->capacity * 2;
@@ -32,26 +203,10 @@ int add_column_to_array(ColumnArray *array, COLUMN *column) {
     return 1;
 }
 
-void free_column_array(ColumnArray *array) {
+void free_column(ColumnArray *array) {
     if (array != NULL) {
         free(array->columns);
         free(array);
-    }
-}
-
-void print_column_array(ColumnArray *array) {
-    printf("Columns:\n");
-    for (size_t i = 0; i < array->size; ++i) {
-        printf("Column %zu:\n", i+1);
-        print_column(array->columns[i]);
-        printf("\n");
-    }
-}
-
-void print_column_names(ColumnArray *array) {
-    printf("Columns:\n");
-    for (size_t i = 0; i < array->size; ++i) {
-        printf("Column %zu: %s\n", i+1, array->columns[i]->title);
     }
 }
 
@@ -92,121 +247,9 @@ void rename_column(ColumnArray *array) {
     print_column_names(array);
 }
 
-void hard_fill(ColumnArray *array) {
-    COLUMN *mycol1 = create_column(UINT, "UNSIGNED INTEGER");
-    int a = 34215, b = 364543664;
-    insert_value(mycol1, &a);
-    insert_value(mycol1, &b);
-    add_column_to_array(array, mycol1);
-
-    COLUMN *mycol2 = create_column(INT, "INTEGER");
-    unsigned int c = 312, d = 3456;
-    insert_value(mycol2, &c);
-    insert_value(mycol2, &d);
-    add_column_to_array(array, mycol2);
-
-    COLUMN *mycol3 = create_column(CHAR, "CHARACTER");
-    char *e = "A", *f = "m";
-    insert_value(mycol3, e);
-    insert_value(mycol3, f);
-    add_column_to_array(array, mycol3);
-
-    COLUMN *mycol4 = create_column(FLOAT, "FLOAT");
-    float g = 17, h = 213.6;
-    insert_value(mycol4, &g);
-    insert_value(mycol4, &h);
-    add_column_to_array(array, mycol4);
-
-    COLUMN *mycol5 = create_column(DOUBLE, "DOUBLE");
-    double i = 17, j = 213.6;
-    insert_value(mycol5, &i);
-    insert_value(mycol5, &j);
-    add_column_to_array(array, mycol5);
-
-    COLUMN *mycol6 = create_column(STRING, "STRING");
-    char** k = "stp marche", **l = "par pitie, fonctionne !";
-    insert_value(mycol6, k);
-    insert_value(mycol6, l);
-    add_column_to_array(array, mycol6);
-}
-
-/*void add_row(ColumnArray *array) {
-    for (size_t i = 0; i < array->size; i++) {
-        printf("Column %zu: %s\nEnter the value to add: ", i+1, array->columns[i]->title);
-
-        // Read input based on column type
-        switch (array->columns[i]->column_type) {
-            case INT: {
-                int value;
-                if (scanf("%d", &value) != 1) {
-                    printf("Invalid input! Please enter a valid integer.\n");
-                    // Consume invalid input from the buffer
-                    while (getchar() != '\n');
-                    i--; // Repeat for the same column
-                    continue;
-                }
-                insert_value(array->columns[i], &value);
-                break;
-            }
-            case UINT: {
-                unsigned int value;
-                if (scanf("%u", &value) != 1) {
-                    printf("Invalid input! Please enter a valid unsigned integer.\n");
-                    while (getchar() != '\n');
-                    i--;
-                    continue;
-                }
-                insert_value(array->columns[i], &value);
-                break;
-            }
-            case FLOAT: {
-                float value;
-                if (scanf("%f", &value) != 1) {
-                    printf("Invalid input! Please enter a valid float.\n");
-                    while (getchar() != '\n');
-                    i--;
-                    continue;
-                }
-                insert_value(array->columns[i], &value);
-                break;
-            }
-            case DOUBLE: {
-                double value;
-                if (scanf("%lf", &value) != 1) {
-                    printf("Invalid input! Please enter a valid double.\n");
-                    while (getchar() != '\n');
-                    i--;
-                    continue;
-                }
-                insert_value(array->columns[i], &value);
-                break;
-            }
-            case CHAR: {
-                char value;
-                if (scanf(" %c", &value) != 1) {
-                    printf("Invalid input! Please enter a valid character.\n");
-                    while (getchar() != '\n');
-                    i--;
-                    continue;
-                }
-                insert_value(array->columns[i], &value);
-                break;
-            }
-            case STRING: {
-                char value[REALLOC_SIZE];
-                if (scanf("%s", value) != 1) {
-                    printf("Invalid input! Please enter a valid string.\n");
-                    while (getchar() != '\n');
-                    i--;
-                    continue;
-                }
-                insert_value(array->columns[i], value); // Passing the string directly
-                break;
-            }
-            default:
-                printf("Unsupported data type!\n");
-                break;
-        }
+void print_column_names(ColumnArray *array) {
+    printf("Columns:\n");
+    for (size_t i = 0; i < array->size; ++i) {
+        printf("Column %zu: %s\n", i+1, array->columns[i]->title);
     }
-    print_column_array(array);
-}*/
+}
