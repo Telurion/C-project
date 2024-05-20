@@ -98,7 +98,6 @@ void delete_column(COLUMN **col) {
 // Function to convert a value to a string
 void convert_value(COLUMN* col, unsigned long long int i, char* str, int size) {
     switch(col->column_type) {
-        // Other cases...
         case INT:
             snprintf(str, size, "%d", *((int*)col->data[i]));
             break;
@@ -111,15 +110,16 @@ void convert_value(COLUMN* col, unsigned long long int i, char* str, int size) {
         case DOUBLE:
             snprintf(str, size, "%lf", *((double*)col->data[i]));
             break;
-            case CHAR:
-                snprintf(str, size, "%c", *((char*)col->data[i]));
-                break;
-            case STRING:
-                strcpy(str,col->data[i]);
-                break;
-            default:
-                break;
-        }
+        case CHAR:
+            snprintf(str, size, "%c", *((char*)col->data[i]));
+            break;
+        case STRING:
+            strcpy(str, *((char **)col->data[i])); // Correction ici
+            break;
+        default:
+            printf("Unsupported column type\n");
+            break;
+    }
 }
 
 // Function to display the content of a column
@@ -132,4 +132,183 @@ void print_column(COLUMN *col) {
         printf("[%llu] %s\n", i,  val);
         free(val); // Free memory after use
     }
+}
+
+int nb_occurence(COLUMN *col, void *value) {
+    int count = 0;
+    for (unsigned long long int i = 0; i < col->size; ++i) {
+        switch (col->column_type) {
+            case INT:
+                if (*((int *)col->data[i]) == *((int *)value)) {
+                    count++;
+                }
+                break;
+            case UINT:
+                if (*((unsigned int *)col->data[i]) == *((unsigned int *)value)) {
+                    count++;
+                }
+                break;
+            case FLOAT:
+                if (*((float *)col->data[i]) == *((float *)value)) {
+                    count++;
+                }
+                break;
+            case DOUBLE:
+                if (*((double *)col->data[i]) == *((double *)value)) {
+                    count++;
+                }
+                break;
+            case CHAR:
+                if (*((char *)col->data[i]) == *((char *)value)) {
+                    count++;
+                }
+                break;
+            case STRING:
+                if (strcmp(*((char **)col->data[i]), *((char **)value)) == 0) {
+                    count++;
+                }
+                break;
+            default:
+                printf("Unsupported column type\n");
+                return -1;
+        }
+    }
+    return count;
+}
+
+void* get_element_at(COLUMN *col, unsigned long long int pos) {
+    if (pos >= col->size) {
+        printf("Index out of bounds\n");
+        return NULL;
+    }
+    return col->data[pos];
+}
+
+int count_greater_than(COLUMN *col, void *x) {
+    int count = 0;
+    for (unsigned long long int i = 0; i < col->size; ++i) {
+        switch (col->column_type) {
+            case INT:
+                if (*((int *)col->data[i]) > *((int *)x)) {
+                    count++;
+                }
+                break;
+            case UINT:
+                if (*((unsigned int *)col->data[i]) > *((unsigned int *)x)) {
+                    count++;
+                }
+                break;
+            case FLOAT:
+                if (*((float *)col->data[i]) > *((float *)x)) {
+                    count++;
+                }
+                break;
+            case DOUBLE:
+                if (*((double *)col->data[i]) > *((double *)x)) {
+                    count++;
+                }
+                break;
+            case CHAR:
+                if (*((char *)col->data[i]) > *((char *)x)) {
+                    count++;
+                }
+                break;
+            case STRING:
+                if (strcmp(*((char **)col->data[i]), *((char **)x)) > 0) {
+                    count++;
+                }
+                break;
+            default:
+                printf("Unsupported column type\n");
+                return -1;
+        }
+    }
+    return count;
+}
+
+int count_less_than(COLUMN *col, void *x) {
+    int count = 0;
+    for (unsigned long long int i = 0; i < col->size; ++i) {
+        switch (col->column_type) {
+            case INT:
+                if (*((int *)col->data[i]) < *((int *)x)) {
+                    count++;
+                }
+                break;
+            case UINT:
+                if (*((unsigned int *)col->data[i]) < *((unsigned int *)x)) {
+                    count++;
+                }
+                break;
+            case FLOAT:
+                if (*((float *)col->data[i]) < *((float *)x)) {
+                    count++;
+                }
+                break;
+            case DOUBLE:
+                if (*((double *)col->data[i]) < *((double *)x)) {
+                    count++;
+                }
+                break;
+            case CHAR:
+                if (*((char *)col->data[i]) < *((char *)x)) {
+                    count++;
+                }
+                break;
+            case STRING:
+                if (strcmp(*((char **)col->data[i]), *((char **)x)) < 0) {
+                    count++;
+                }
+                break;
+            default:
+                printf("Unsupported column type\n");
+                return -1;
+        }
+    }
+    return count;
+}
+
+int count_equal_to(COLUMN *col, void *x) {
+    int count = 0;
+
+    // Iterate through each element in the column and compare
+    for (unsigned long long int i = 0; i < col->size; ++i) {
+        switch (col->column_type) {
+            case INT:
+                if (*((int *)col->data[i]) == *((int *)x)) {
+                    count++;
+                }
+                break;
+            case UINT:
+                if (*((unsigned int *)col->data[i]) == *((unsigned int *)x)) {
+                    count++;
+                }
+                break;
+            case FLOAT:
+                if (*((float *)col->data[i]) == *((float *)x)) {
+                    count++;
+                }
+                break;
+            case DOUBLE:
+                if (*((double *)col->data[i]) == *((double *)x)) {
+                    count++;
+                }
+                break;
+            case CHAR:
+                if (*((char *)col->data[i]) == *((char *)x)) {
+                    count++;
+                }
+                break;
+            case STRING:
+                if (strcmp(*((char **)col->data[i]), *((char **)x)) == 0) {
+                    count++;
+                }
+                break;
+            default:
+                printf("Unsupported column type\n");
+                return -1;
+        }
+    }
+
+    return count;
 }
