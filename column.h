@@ -39,5 +39,6 @@ void convert_value(COLUMN *col, unsigned long long int i, char *str, int size);
 
 void print_column(COLUMN* col);
 
+int
 
 #endif
